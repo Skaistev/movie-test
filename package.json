@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --watch index.js"
+    "test10": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --watch index.js",
+    "test": "newman run Movies.json -e globals.json",
+    "testReport": "newman run Movies.json -e globals.json -r htmlextra"
   },
   "keywords": [],
   "author": "saulute",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
-    "newman": "^6.1.2"
+    "newman": "^6.1.2",
+    "newman-reporter-htmlextra": "^1.23.1"
   }
 }
