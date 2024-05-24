@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    pull_request:
+    branches:
       - pm-collection-and-newman-run
       
 jobs:
@@ -42,11 +44,11 @@ jobs:
 
     - name: Run POSTMAN collection to console
       run: |
-       newman run Movies.json
+       newman run Movies.json -e globals.json
 
     - name: Run POSTMAN collection to html report
       run: |
-       newman run Movies.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html
+       newman run Movies.json -r htmlextra --reporter-htmlextra-export -e globals.json testResults/htmlreport.html
 
     - name: Output the run Details
       uses: actions/upload-artifact@v2
