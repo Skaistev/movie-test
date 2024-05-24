@@ -45,7 +45,7 @@ jobs:
 
     - name: Run POSTMAN collection to html report
       run: |
-       npm run testReport testResults/htmlreport.html
+       newman run Movies.json -e globals.json -r htmlextra
 
     - name: Output the run Details
       uses: actions/upload-artifact@v2
