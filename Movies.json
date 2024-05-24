@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "create movie",
+			"name": "create and remove movie",
 			"item": [
 				{
 					"name": "add a movie",
@@ -17,41 +17,34 @@
 							"script": {
 								"exec": [
 									"\r",
-									"pm.test(\"Status code is 201\", function () {\r",
+									"  pm.environment.set(\"user_id\", pm.response.json().id);\r",
+									"  pm.environment.set(\"title\", pm.response.json().title);\r",
+									"  pm.environment.set(\"director\", pm.response.json().director);\r",
+									"  pm.environment.set(\"rating\", pm.response.json().rating);\r",
+									"  pm.environment.set(\"year\", pm.response.json().year);\r",
+									"\r",
+									"pm.test(\"Status code is 201\",  ()  => {\r",
 									"    pm.response.to.have.status(201);\r",
 									"});\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"pm.test(\"Response time is less than 200ms\",() => {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
-									"pm.test(\"Each property in the response body has a valid value\", function () {\r",
+									"pm.test(\"Each property in the response body has a valid value\", () => {\r",
 									"    const responseData = pm.response.json();\r",
+									"    const requestData = JSON.parse(pm.request.body.raw);\r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData).to.have.property('id').that.is.a('number');\r",
-									"    pm.expect(responseData).to.have.property('title').that.is.a('string');\r",
-									"    pm.expect(responseData).to.have.property('rating').that.is.a('number');\r",
-									"    pm.expect(responseData).to.have.property('director').that.is.a('string');\r",
-									"    pm.expect(responseData).to.have.property('year').that.is.a('number');\r",
+									"    pm.expect(responseData).to.have.property('title').to.equal(requestData.title);\r",
+									"    pm.expect(responseData).to.have.property('rating').to.equal(requestData.rating);\r",
+									"    pm.expect(responseData).to.have.property('director').to.equal(requestData.director);\r",
+									"    pm.expect(responseData).to.have.property('year').to.equal(requestData.year);\r",
 									"});\r",
-									"pm.test(\"Response body has 5 properties\", function () {\r",
+									"pm.test(\"Response body has 5 properties\",  () => {\r",
 									"    const responseData = pm.response.json();\r",
 									"    const propertiesCount = Object.keys(responseData).length;\r",
 									"    pm.expect(propertiesCount).to.equal(5);\r",
 									"});\r",
-									"pm.test(\"Set the response body properties\", function () {\r",
-									"    pm.environment.set(\"user_id\", pm.response.json().id);\r",
-									"    pm.environment.set(\"title\", pm.response.json().title);\r",
-									"    pm.environment.set(\"director\", pm.response.json().director);\r",
-									"    pm.environment.set(\"rating\", pm.response.json().rating);\r",
-									"     pm.environment.set(\"year\", pm.response.json().year);\r",
-									"});\r",
-									"pm.test(\"Year property length is 4\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.year.toString().length).to.eql(4);\r",
-									"});\r",
-									"pm.test(\"Rating property value is under 11\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.rating).to.be.below(11);\r",
-									"});\r",
+									"\r",
 									""
 								],
 								"type": "text/javascript",
@@ -64,7 +57,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Kings\", \r\n    \"director\": \"Someone\", \r\n    \"year\": 2010, \r\n    \"rating\": 5\r\n}",
+							"raw": "{\r\n    \"title\": \"King\", \r\n    \"director\": \"anyOne\", \r\n    \"year\": 2100, \r\n    \"rating\": 10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -90,14 +83,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
+									"pm.test(\"Status code is 200\",  () => {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"pm.test(\"Response time is less than 200ms\",  () => {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Each property in the response body has a valid value\", function () {\r",
+									"pm.test(\"Each property in the response body has a valid value\",  () => {\r",
 									"    const responseData = pm.response.json();\r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData).to.have.property('id', pm.environment.get(\"user_id\"));\r",
@@ -107,19 +100,7 @@
 									"    pm.expect(responseData).to.have.property('year',pm.environment.get(\"year\"));\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Response object has an 'id' property which is a number\", function () {\r",
-									"    const responseData = pm.response.json();\r",
-									"    pm.expect(responseData).to.have.property('id').that.is.a('number');\r",
-									"});\r",
-									"pm.test(\"Year property length is 4\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.year.toString().length).to.eql(4);\r",
-									"});\r",
-									"pm.test(\"Rating property length is less than 11\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.rating).to.be.below(11);\r",
-									"});\r",
-									"pm.test(\"Response content type is application/json\", function () {\r",
+									"pm.test(\"Response content type is application/json\",  () => {\r",
 									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
 									"});\r",
 									"\r",
@@ -145,12 +126,60 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "delete movie",
-			"item": [
+				},
+				{
+					"name": "all movies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\",  () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response time is less than 200ms\", () => {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"pm.test(\"Response content type is application/json\", () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"});",
+									"",
+									"pm.test(\"Response is an array or an object\",  () => {",
+									"    pm.expect(pm.response.json()).to.satisfy((response) => {",
+									"        return Array.isArray(response) || typeof response === 'object';",
+									"    });",
+									"});",
+									"",
+									"pm.test(\"Response has a created movie\",  () =>  {",
+									"    const response = pm.response.json();",
+									"    const objectFound = response.some((el) => {",
+									"        return el.id === pm.environment.get(\"user_id\"); ",
+									"    });",
+									"    pm.expect(objectFound).to.be.true;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}3006/movies/",
+							"host": [
+								"{{url}}3006"
+							],
+							"path": [
+								"movies",
+								""
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "remove a movie",
 					"event": [
@@ -159,10 +188,10 @@
 							"script": {
 								"exec": [
 									"\r",
-									"pm.test(\"Status code is 200 or 204\", function () {\r",
+									"pm.test(\"Status code is 200 or 204\", () => {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
 									"});\r",
-									"pm.test(\"Response content type is text\", function () {\r",
+									"pm.test(\"Response content type is text\",  () => {\r",
 									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('text');\r",
 									"});\r",
 									""
@@ -195,13 +224,13 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 404\", function () {\r",
+									"pm.test(\"Status code is 404\",  () => {\r",
 									"    pm.response.to.have.status(404);\r",
 									"});\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"pm.test(\"Response time is less than 200ms\",  () => {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
-									"pm.test(\"Response content type is text\", function () {\r",
+									"pm.test(\"Response content type is text\",  () => {\r",
 									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('text');\r",
 									"});"
 								],
@@ -233,37 +262,20 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
+									"pm.test(\"Status code is 200\",  () => {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"pm.test(\"Response time is less than 200ms\",  ()=> {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
-									"pm.test(\"Response content type is application/json\", function () {\r",
+									"pm.test(\"Response content type is application/json\", () => {\r",
 									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
 									"});\r",
-									"\r",
-									"function checkProperty(obj, propertyName, expectedValue) {\r",
-									"    for (const key in obj) {\r",
-									"        if (obj.hasOwnProperty(key)) {\r",
-									"            if (key === propertyName && obj[key] === expectedValue) {\r",
-									"                return true;\r",
-									"            }\r",
-									"            if (typeof obj[key] === 'object' && obj[key] !== null) {\r",
-									"                if (checkProperty(obj[key], propertyName, expectedValue)) {\r",
-									"                    return true;\r",
-									"                }\r",
-									"            }\r",
-									"        }\r",
-									"    }\r",
-									"    return false;\r",
-									"}\r",
-									"\r",
-									"\r",
-									"pm.test(`Check if any object contains property id with previously deleted value `, function() {\r",
-									"    const result = checkProperty(pm.response.json(), \"id\", pm.environment.get(\"user_id\"));\r",
-									"    pm.expect(result).to.be.false;\r",
-									"});"
+									"pm.test(\"Response doesn't enclude deleted movie\", ()=> {\r",
+									"    pm.response.json().forEach((el)=>{\r",
+									"        pm.expect(el.id).not.to.be.equal(pm.environment.get(\"user_id\"))\r",
+									"    });\r",
+									"})"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -298,43 +310,33 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"\r",
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
-									"});\r",
-									"pm.test(\"Each property in the response body has a valid value\", function () {\r",
-									"    const responseData = pm.response.json();\r",
-									"    pm.expect(responseData).to.be.an('object');\r",
-									"    pm.expect(responseData).to.have.property('id').that.is.a('number');\r",
-									"    pm.expect(responseData).to.have.property('title').that.is.a('string');\r",
-									"    pm.expect(responseData).to.have.property('rating').that.is.a('number');\r",
-									"    pm.expect(responseData).to.have.property('director').that.is.a('string');\r",
-									"    pm.expect(responseData).to.have.property('year').that.is.a('number');\r",
-									"});\r",
-									"pm.test(\"Response body has 5 properties\", function () {\r",
-									"    const responseData = pm.response.json();\r",
-									"    const propertiesCount = Object.keys(responseData).length;\r",
-									"    pm.expect(propertiesCount).to.equal(5);\r",
-									"});\r",
-									"pm.test(\"Set the response body properties\", function () {\r",
 									"    pm.environment.set(\"user_id_put\", pm.response.json().id);\r",
 									"    pm.environment.set(\"title_put\", pm.response.json().title);\r",
 									"    pm.environment.set(\"director_put\", pm.response.json().director);\r",
 									"    pm.environment.set(\"year_put\", pm.response.json().year);\r",
 									"    pm.environment.set(\"rating_put\", pm.response.json().rating);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
 									"});\r",
-									"pm.test(\"Year property length is 4\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.year.toString().length).to.eql(4);\r",
+									"pm.test(\"Response time is less than 200ms\", () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
-									"pm.test(\"Rating property value is under 11\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.rating).to.be.below(11);\r",
+									"pm.test(\"Each property in the response body has a valid value\",  () => {\r",
+									"    const responseData = pm.response.json();\r",
+									"    const requestData = JSON.parse(pm.request.body.raw);\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData).to.have.property('id').that.is.a('number');\r",
+									"    pm.expect(responseData).to.have.property('title').to.equal(requestData.title);\r",
+									"    pm.expect(responseData).to.have.property('rating').to.equal(requestData.rating);\r",
+									"    pm.expect(responseData).to.have.property('director').to.equal(requestData.director);\r",
+									"    pm.expect(responseData).to.have.property('year').to.equal(requestData.year);\r",
 									"});\r",
-									""
+									"pm.test(\"Response body has 5 properties\", () => {\r",
+									"    const responseData = pm.response.json();\r",
+									"    const propertiesCount = Object.keys(responseData).length;\r",
+									"    pm.expect(propertiesCount).to.equal(5);\r",
+									"});"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -372,14 +374,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
+									"pm.environment.set(\"rating_edited\", pm.response.json().rating)\r",
+									"\r",
+									"pm.test(\"Status code is 200\",  () => {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"pm.test(\"Rating property value is under 11\", function () {\r",
+									"pm.test(\"Rating property value is under 11\",  () => {\r",
 									"    const jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.rating).to.be.below(11);\r",
 									"});\r",
-									"pm.test(\"Each property in the response body has a valid value\", function () {\r",
+									"pm.test(\"Each property in the response body has a valid value\",  () => {\r",
 									"    const responseData = pm.response.json();\r",
 									"    pm.expect(responseData).to.be.an('object');\r",
 									"    pm.expect(responseData).to.have.property('id', pm.environment.get(\"user_id_put\"));\r",
@@ -391,9 +395,7 @@
 									"pm.test(\"Rating is updated\", () => {\r",
 									"  pm.expect(pm.response.json().rating).to.be.not.equal(pm.environment.get(\"rating_put\"))\r",
 									"});\r",
-									"pm.test(\"Set new rating value\",  () => {\r",
-									"    pm.environment.set(\"rating_edited\", pm.response.json().rating);\r",
-									"});\r",
+									"\r",
 									""
 								],
 								"type": "text/javascript",
@@ -427,55 +429,97 @@
 					"response": []
 				},
 				{
+					"name": "movie by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 200ms\",  () => {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each property in the response body has a valid value\",  () => {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData).to.have.property('id', pm.environment.get(\"user_id_put\"));\r",
+									"    pm.expect(responseData).to.have.property('title',pm.environment.get(\"title_put\"));;\r",
+									"    pm.expect(responseData).to.have.property('director',pm.environment.get(\"director_put\"));\r",
+									"    pm.expect(responseData).to.have.property('year',pm.environment.get(\"year_put\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response content type is application/json\",  () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+									"});\r",
+									"pm.test(\"Rating is updated\", () => {\r",
+									"  pm.expect(pm.response.json().rating).to.be.not.equal(pm.environment.get(\"rating_put\"))\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}3006/movies/{{user_id_put}}",
+							"host": [
+								"{{url}}3006"
+							],
+							"path": [
+								"movies",
+								"{{user_id_put}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "all movies",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
+									"pm.test(\"Status code is 200\", () => {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"pm.test(\"Response is an array or an object\", function () {\r",
+									"pm.test(\"Response is an array or an object\",  () => {\r",
 									"    pm.expect(pm.response.json()).to.satisfy((response) => {\r",
 									"        return Array.isArray(response) || typeof response === 'object';\r",
 									"    });\r",
 									"});\r",
-									"\r",
-									"pm.test(\"Response has 'id' property which is a number\", function () {\r",
-									"    const response = pm.response.json();\r",
-									"    response.forEach((movie) => {\r",
-									"        pm.expect(movie).to.have.property('id').that.is.a('number');\r",
-									"    });\r",
-									"});\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"pm.test(\"Response time is less than 200ms\", () => {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
-									"pm.test(\"Response content type is application/json\", function () {\r",
+									"pm.test(\"Response content type is application/json\",  () => {\r",
 									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
 									"});\r",
 									"\r",
-									"function checkProperties(obj, properties) {\r",
+									"pm.test (\"Is there updated movie with it's new rating\", ()=> {\r",
+									" const all = pm.response.json();\r",
+									" let updatedMovie = null;\r",
 									"\r",
-									"    const objectWithId = obj.find(obj => obj.id === pm.environment.get('user_id_put'));\r",
+									"   for (let i = 0; i < all.length; i++) {\r",
+									"        if (all[i].id === pm.environment.get(\"user_id_put\")){\r",
+									"            updatedMovie = all[i];\r",
+									"            break;\r",
+									"        };\r",
+									"   };\r",
+									"      \r",
+									"pm.expect(updatedMovie).to.not.be.null;\r",
 									"\r",
-									"    for (const key in properties) {\r",
-									"        if (objectWithId[key] !== properties[key]) {\r",
-									"            return true;\r",
-									"        }\r",
-									"    }\r",
-									"    return false;\r",
-									"}\r",
+									"pm.expect(updatedMovie.rating).to.equal(pm.environment.get(\"rating_edited\"));\r",
+									"});\r",
 									"\r",
-									"pm.test(`Check if data contains id with matching properties`, function() {\r",
-									"    const response = pm.response.json();\r",
-									"    const propertiesToCheck = {\r",
-									"        rating: pm.environment.get('rating_edited')\r",
-									"    };\r",
-									"    const result = checkProperties(response, propertiesToCheck);\r",
-									"    console.log(result)\r",
-									"    pm.expect(result).to.be.false;\r",
-									"});"
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
