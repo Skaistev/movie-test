@@ -1,0 +1,55 @@
+name: Postman-test.yml
+on:
+  push:
+    branches:
+      - main
+      - pm-collection-and-newman-run
+      
+jobs:
+  postman-test-api:
+  
+    runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@v2
+      
+    - name: Install Node
+      uses: actions/setup-node@v1
+      with: 
+        node-version: '16.x'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Start Node.js Application
+      run: |
+        nohup npm start &
+    
+    - name: Wait for Application to Start
+      run: |
+        while ! curl -s http://localhost:3006/movie > /dev/null; do
+          echo "Waiting for application to start..."
+          sleep 2
+        done
+  
+    - name: Install newman
+      run: |
+       npm install -g newman
+       npm install -g newman-reporter-htmlextra
+
+    - name: Make Directory for results
+      run: mkdir -p testResults
+
+    - name: Run POSTMAN collection to console
+      run: |
+       newman run Movies.json
+
+    - name: Run POSTMAN collection to html report
+      run: |
+       newman run Movies.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html
+
+    - name: Output the run Details
+      uses: actions/upload-artifact@v2
+      with: 
+       name: RunReports
+       path: testResults
