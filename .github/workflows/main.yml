@@ -1,4 +1,4 @@
-name: Postman-test.yml
+name: Movie.yml
 on:
   push:
     branches:
