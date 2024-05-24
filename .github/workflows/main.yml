@@ -1,9 +1,8 @@
-name: Movie.yml
+name: Postman-test.yml
 on:
   push:
     branches:
       - main
-      - pm-collection-and-newman-run
       
 jobs:
   postman-test-api:
@@ -27,7 +26,7 @@ jobs:
     
     - name: Wait for Application to Start
       run: |
-        while ! curl -s http://localhost:3006/movie > /dev/null; do
+        while ! curl -s http://localhost:3006/movies > /dev/null; do
           echo "Waiting for application to start..."
           sleep 2
         done
@@ -42,11 +41,11 @@ jobs:
 
     - name: Run POSTMAN collection to console
       run: |
-       newman run Movies.json
+       npm run test
 
     - name: Run POSTMAN collection to html report
       run: |
-       newman run Movies.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html
+       npm run testReport testResults/htmlreport.html
 
     - name: Output the run Details
       uses: actions/upload-artifact@v2
