@@ -27,7 +27,7 @@ jobs:
     
     - name: Wait for Application to Start
       run: |
-        while ! curl -s http://localhost:3000/users > /dev/null; do
+        while ! curl -s http://localhost:3006/movie > /dev/null; do
           echo "Waiting for application to start..."
           sleep 2
         done
@@ -42,11 +42,11 @@ jobs:
 
     - name: Run POSTMAN collection to console
       run: |
-       newman run ./postman-tests/user_management.postman_collection.json
+       newman run Movies.json
 
     - name: Run POSTMAN collection to html report
       run: |
-       newman run ./postman-tests/user_management.postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html
+       newman run Movies.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html
 
     - name: Output the run Details
       uses: actions/upload-artifact@v2
