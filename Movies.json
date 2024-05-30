@@ -152,10 +152,10 @@
 									"",
 									"pm.test(\"Response has a created movie\",  () =>  {",
 									"    const response = pm.response.json();",
-									"    const objectFound = response.some((el) => {",
+									"    const movieFound = response.some((el) => {",
 									"        return el.id === pm.environment.get(\"user_id\"); ",
 									"    });",
-									"    pm.expect(objectFound).to.be.true;",
+									"    pm.expect(movieFound).to.be.true;",
 									"});",
 									""
 								],
@@ -218,7 +218,7 @@
 					"response": []
 				},
 				{
-					"name": "deleted movie",
+					"name": "deleted movie by id",
 					"event": [
 						{
 							"listen": "test",
@@ -256,7 +256,7 @@
 					"response": []
 				},
 				{
-					"name": "all movies",
+					"name": "all movies does't enclude deleted movie",
 					"event": [
 						{
 							"listen": "test",
